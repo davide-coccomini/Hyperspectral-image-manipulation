@@ -45,53 +45,58 @@ void decimazione() {
 	saveImages("C:/images/decimazione/seven", sevenImages);
 }
 
-static void media() {
+static void media(int jump) {
 	/* Media */
 	vector<cv::Mat> images, fifteenImages, sevenImages;
-	cout << endl;
 	for (int i = 1; i <= 31; i++) {
 		Mat image = imread("images/" + to_string(i - 1) + ".tif", CV_LOAD_IMAGE_GRAYSCALE);
 		images.push_back(image);
 	}
-	for (int i = 1; i < 31; i++) {
-		if (i % 2) {
-			for (int j = 0; j < 2129; j++) {
-				for (int k = 0; k < 2165; k++) {
+	cout << images.size() << endl;
+	int rows = images[0].rows;
+	int cols = images[0].cols;
+
+	for (int i = 1; i < 30; i++) {
+		if (i % 2 == 0 || i == 1) {
+			for (int j = 0; j < rows; j++) {
+				for (int k = 0; k < cols; k++) {
 					Scalar intensityLeft = images[i - 1].at<uchar>(j, k);
 					Scalar intensityRight = images[i + 1].at<uchar>(j, k);
 					Scalar intensityCenter = images[i].at<uchar>(j, k);
 					Scalar intensity = ((intensityLeft / 2) + intensityCenter + (intensityRight / 2)) / 2;
 					images[i].at<uchar>(j, k) = intensity.val[0];
-						fifteenImages.push_back(images[i]);
-					cout  << i << "/" << 31 << " & " << j << "/" << 2129 << " & " << k << "/" << 2165 << "\r";
 				}
 			}
+		 fifteenImages.push_back(images[i]);
 		}
+		cout << i << "/" << 31 <<  endl;
 	}
+	saveImages("C:/images/media/fifteen", fifteenImages);
 
-	saveImages("images/media/fifteenImages", fifteenImages);
 
-	for (int i = 4; i < 31; i+=5) {
-			for (int j = 0; j < 2129; j++) {
-				for (int k = 0; k < 2165; k++) {
+
+	for (int i = 3; i < 29; i+=4) {
+			for (int j = 0; j < rows; j++) {
+				for (int k = 0; k < cols; k++) {
 					Scalar intensityLeft = images[i - 1].at<uchar>(j, k) + images[i - 2].at<uchar>(j, k)/2;
 					Scalar intensityRight = images[i + 1].at<uchar>(j, k) + images[i + 2].at<uchar>(j, k)/2;
 					Scalar intensityCenter = images[i].at<uchar>(j, k);
 					Scalar intensity = (intensityLeft + intensityCenter + intensityRight) / 4;
 					images[i].at<uchar>(j, k) = intensity.val[0];
-					fifteenImages.push_back(images[i]);
-					cout <<  i << "/" << 31 << " & " << j << "/" << 2129 << " & " << k << "/" << 2165 << "\r";
 				}
 			}
+			sevenImages.push_back(images[i]);
+			cout << i << "/" << 31 << endl;
 	}
-	saveImages("images/media/sevenImages", sevenImages);
+	saveImages("C:/images/media/seven", sevenImages);
 }
 
 int main(int argc, char* argv[])
 {
 	decimazione();
 
-	thread th1(media);
+	media(1);
+
 	//media();
 
 	cout << endl;

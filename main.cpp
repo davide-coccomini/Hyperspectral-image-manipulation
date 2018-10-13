@@ -12,9 +12,7 @@ https://docs.opencv.org/2.4/doc/user_guide/ug_mat.html
 #include <math.h>
 #include <string>
 #include <stdlib.h>  
-#include <string> 
-#include <thread> 
-
+#include <string>
 
 
 
@@ -27,8 +25,8 @@ void saveImages(string path, vector<cv::Mat> images) {
 		bool check = imwrite(path+"/"+ to_string(i)+".tif", images[i]);
 	}
 }
-void decimazione() {
-	/*Decimazione*/
+void decimation() {
+	/*Decimation*/
 
 	vector<cv::Mat> fifteenImages, sevenImages;
 	for (int i = 1; i <= 31; i++) {
@@ -45,14 +43,14 @@ void decimazione() {
 	saveImages("C:/images/decimazione/seven", sevenImages);
 }
 
-static void media(int jump) {
-	/* Media */
+static void average() {
+	/* Average */
 	vector<cv::Mat> images, fifteenImages, sevenImages;
 	for (int i = 1; i <= 31; i++) {
 		Mat image = imread("images/" + to_string(i - 1) + ".tif", CV_LOAD_IMAGE_GRAYSCALE);
 		images.push_back(image);
 	}
-	cout << images.size() << endl;
+
 	int rows = images[0].rows;
 	int cols = images[0].cols;
 
@@ -69,7 +67,7 @@ static void media(int jump) {
 			}
 		 fifteenImages.push_back(images[i]);
 		}
-		cout << i << "/" << 31 <<  endl;
+		cout << i << "/" << 29 <<  endl;
 	}
 	saveImages("C:/images/media/fifteen", fifteenImages);
 
@@ -86,20 +84,15 @@ static void media(int jump) {
 				}
 			}
 			sevenImages.push_back(images[i]);
-			cout << i << "/" << 31 << endl;
+			cout << i << "/" << 27 << endl;
 	}
 	saveImages("C:/images/media/seven", sevenImages);
 }
 
 int main(int argc, char* argv[])
 {
-	decimazione();
-
-	media(1);
-
-	//media();
-
-	cout << endl;
+	decimation();
+	average();
 	system("pause");
 	return 0;
 }

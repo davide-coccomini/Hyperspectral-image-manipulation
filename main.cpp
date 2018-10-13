@@ -20,23 +20,40 @@ using namespace cv;
 using namespace std;
 
 
-void saveImages(string path, vector<cv::Mat> images) {
+struct wavelength {
+	Mat image;
+	int value;
+};
+
+void saveImages(string path, vector<wavelength> images) {
 	for (int i = 0; i < images.size(); i++) {
-		bool check = imwrite(path+"/"+ to_string(i)+".tif", images[i]);
+		bool check = imwrite(path+"/"+ to_string(images[i].value) +".tif", images[i].image);
 	}
 }
 void decimation() {
 	/*Decimation*/
 
-	vector<cv::Mat> fifteenImages, sevenImages;
+	vector<wavelength> fifteenImages, sevenImages;
+	int baseWavelengthFifteen = 410;
+	int baseWavelengthSeven = 430;
 	for (int i = 1; i <= 31; i++) {
 		if (i % 2 == 0) {
 			Mat image = imread("images/" + to_string(i - 1) + ".tif", CV_LOAD_IMAGE_GRAYSCALE);
-			fifteenImages.push_back(image);
+			wavelength w = {
+				image,
+				baseWavelengthFifteen
+			};
+			fifteenImages.push_back(w);
+			baseWavelengthFifteen += 20;
 		}
 		if (i % 4 == 0) {
 			Mat image = imread("images/" + to_string(i - 1) + ".tif", CV_LOAD_IMAGE_GRAYSCALE);
-			sevenImages.push_back(image);
+			wavelength w = {
+				image,
+				baseWavelengthSeven
+			};
+			sevenImages.push_back(w);
+			baseWavelengthSeven += 40;
 		}
 	}
 	saveImages("C:/images/decimazione/fifteen", fifteenImages);
@@ -45,7 +62,12 @@ void decimation() {
 
 static void average() {
 	/* Average */
-	vector<cv::Mat> images, fifteenImages, sevenImages;
+	vector<cv::Mat> images;
+	vector<wavelength> fifteenImages, sevenImages;
+
+	int baseWavelengthFifteen = 410;
+	int baseWavelengthSeven = 430;
+
 	for (int i = 1; i <= 31; i++) {
 		Mat image = imread("images/" + to_string(i - 1) + ".tif", CV_LOAD_IMAGE_GRAYSCALE);
 		images.push_back(image);
@@ -65,12 +87,21 @@ static void average() {
 					images[i].at<uchar>(j, k) = intensity.val[0];
 				}
 			}
-		 fifteenImages.push_back(images[i]);
+		 wavelength w = {
+			images[i],
+			baseWavelengthFifteen
+		 };
+		 fifteenImages.push_back(w);
+		 baseWavelengthFifteen += 20;
 		}
-		cout << i << "/" << 29 <<  endl;
+	 cout << i << "/" << 29 <<  endl;
 	}
 	saveImages("C:/images/media/fifteen", fifteenImages);
 
+	for (int i = 1; i <= 31; i++) {
+		Mat image = imread("images/" + to_string(i - 1) + ".tif", CV_LOAD_IMAGE_GRAYSCALE);
+		images.push_back(image);
+	}
 
 
 	for (int i = 3; i < 29; i+=4) {
@@ -83,8 +114,13 @@ static void average() {
 					images[i].at<uchar>(j, k) = intensity.val[0];
 				}
 			}
-			sevenImages.push_back(images[i]);
-			cout << i << "/" << 27 << endl;
+		wavelength w = {
+			images[i],
+			baseWavelengthSeven
+		};
+		sevenImages.push_back(w);
+		baseWavelengthSeven += 40;
+		cout << i << "/" << 27 << endl;
 	}
 	saveImages("C:/images/media/seven", sevenImages);
 }
